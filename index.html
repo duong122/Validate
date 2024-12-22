@@ -42,18 +42,27 @@
           <button class="form-submit">Đăng ký</button>
         </form>
     </div>
-    <script src="./index.js"></script>
+    <script src="./source.js"></script>
+    <!-- <script src="./index.js"></script> -->
 
     <script>
       Validator({
         form: '#form-1',
         formGroupSelector: '.form-group',
         errorSelector: '.form-message',
-        rule: [
+        rules: [
           Validator.isRequired('#fullname'),
+          Validator.isRequired('#email'),
           Validator.isEmail('#email'),
-        ]
+          Validator.minLengthPassword('#password', 4),
+          Validator.isPasswordConfirmed('#password_confirmation', () => {
+            return document.querySelector('#password').value
+          }),
+        ],
+        onSubmit: function(data) {
+          console.log(data)
+        }
       })
     </script>
 </body>
-</html>
+</html>	
