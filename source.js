@@ -3,6 +3,9 @@
 // Contructor function 
 function Validator(obj) {
 
+    //  Các rule liên quan đến một input sẽ nằm trong mảng là value của một key là id của thẻ input cần kiểm tra
+    var inputRules = {}
+
     // Xóa bỏ class Invalid ở thẻ cha của inputElement
     function removeInvalid(inputElement) {
         var parentElement = inputElement.parentElement
@@ -10,9 +13,15 @@ function Validator(obj) {
         parentElement.classList.remove('invalid')
     }
 
-    // Hàm thực hiện validate trường dữ liệu inputElement
-    function validate(inputElement, rule) {
-        var errorMessage = rule.test(inputElement.value)
+    // Hàm thực hiện validate trường dữ liệu inputElement có thể tồn tại nhiều rule trên một inputElement
+    function validate(inputElement, rule) {       
+        var rules = inputRules[rule.selector]
+        var errorMessage = ''
+        for(var i = 0; i < rules.length; ++i) {
+            errorMessage = rules[i](inputElement.value)
+            if (errorMessage) break;
+        }
+
         if (errorMessage) {
             var errorElement = inputElement.parentElement.querySelector('.form-message')
             if (errorElement) {
@@ -23,12 +32,13 @@ function Validator(obj) {
         else {
             removeInvalid(inputElement)
         }
+
         return !errorMessage
     }
 
+    // Lấy ra form cần validate
     var formElement = document.querySelector(obj.form)
     if (formElement) {
-
         // Khi submit form
         formElement.onsubmit = (e) => {
             e.preventDefault()
@@ -62,6 +72,16 @@ function Validator(obj) {
         obj.rules.forEach((rule) => {
             var inputElement = formElement.querySelector(rule.selector)
             if (inputElement) {
+
+                // Lưu lại các rule cho mỗi input 
+                if(Array.isArray(inputRules[rule.selector])) {
+                    inputRules[rule.selector].push(rule.test)
+                } else {
+                    inputRules[rule.selector] = [rule.test]
+                }
+
+                console.log(inputRules)
+    
                  // Xư lý trường hợp blur ra khỏi input
                 inputElement.onblur = () => {
                     validate(inputElement, rule)
@@ -80,39 +100,39 @@ function Validator(obj) {
     }
 }
 
-Validator.isRequired = function (selector) {
+Validator.isRequired = function (selector, message) {
     return {
         selector,
         test: function (value) {
-            return value ? undefined : 'Vui lòng nhập trường này'
+            return value ? undefined : message || 'Vui lòng nhập trường này'
         }
     }
 }
 
-Validator.isEmail = function (selector) {
+Validator.isEmail = function (selector, message) {
     return {
         selector,
         test: function (value) {
             var regex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
-            return regex.test(value) ? undefined : 'Trường này phải là email'
+            return regex.test(value) ? undefined : message || 'Trường này phải là email'
         }
     }
 }
 
-Validator.minLengthPassword = (selector, min) => {
+Validator.minLengthPassword = (selector, min, message) => {
     return {
         selector,
         test: function (value) {
-            return value.length >= min ? undefined : `Mật khẩu phải có ít nhất ${min} kí tự`
+            return value.length >= min ? undefined : message || `Mật khẩu phải có ít nhất ${min} kí tự`
         }
     }
 }
 
-Validator.isPasswordConfirmed = (selector, confirmValue) => {
+Validator.isPasswordConfirmed = (selector, confirmValue, message) => {
     return {
         selector,
         test: function (value) {
-            return value === confirmValue() && value != '' ? undefined : 'Mật khẩu nhập lại không chính xác'
+            return value === confirmValue() && value != '' ? undefined : message || 'Mật khẩu nhập lại không chính xác'
         }
     }
 }

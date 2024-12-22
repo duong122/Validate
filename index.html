@@ -52,7 +52,7 @@
         errorSelector: '.form-message',
         rules: [
           Validator.isRequired('#fullname'),
-          Validator.isRequired('#email'),
+          Validator.isRequired('#email', 'Vui lòng nhập email'),
           Validator.isEmail('#email'),
           Validator.minLengthPassword('#password', 4),
           Validator.isPasswordConfirmed('#password_confirmation', () => {

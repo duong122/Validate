@@ -105,6 +105,7 @@ function Validator(options) {
 
         // Lặp qua mỗi rule và xử lý( lắng nghe sự kiện onblur, oninput)
         options.rules.forEach((rule) => {
+            
             // Lưu lại các rule cho mỗi input 
             if (Array.isArray(selectorRules[rule.selector])) {
                 selectorRules[rule.selector].push(rule.test)
