@@ -19,24 +19,25 @@ function Validator(obj) {
     // Xóa bỏ class Invalid ở thẻ cha của inputElement
     function removeInvalid(inputElement) {
         var parentElement = getParentElement(inputElement, '.form-group')
+        // console.log(parentElement)
         parentElement.querySelector('.form-message').innerText = ''
         parentElement.classList.remove('invalid')    
     }
 
     // Hàm thực hiện validate trường dữ liệu inputElement (có thể tồn tại nhiều rule trên một inputElement)
     function validate(inputElement, rule) {       
+        // console.log(inputElement)
         var rules = inputRules[rule.selector]
         var errorMessage = ''
         for(var i = 0; i < rules.length; ++i) {
            switch(inputElement.type) {
-                case 'radio':
-                    
-                    break;
                 case 'checkbox':
+                case 'radio':
                     errorMessage = rules[i](formElement.querySelector(rule.selector + ':checked'))
-                    break;
+                    break;  
                 default:
                     errorMessage = rules[i](inputElement.value)
+                    break;
            }
             if (errorMessage) break;
         } 
@@ -59,6 +60,7 @@ function Validator(obj) {
     // Lấy ra form cần validate
     var formElement = document.querySelector(obj.form)
     if (formElement) {
+
         // Khi submit form
         formElement.onsubmit = (e) => {
             e.preventDefault()
@@ -80,7 +82,25 @@ function Validator(obj) {
             if (isValidate) {
                 let inputElements = formElement.querySelectorAll('[name]')
                 let formValues = Array.from(inputElements).reduce((values, input) => {
-                    values[input.name] = input.value
+                    switch(input.type) {
+                        case 'checkbox':     
+                            values[input.name] = []
+                            var checkboxChecked = formElement.querySelectorAll('input[name="' + input.name + '"]' + ':checked')
+                            Array.from(checkboxChecked).forEach((element) => {
+                                values[input.name].push(element.value)
+                            })
+                            break;
+                        case 'radio':
+                            let elementChecked = formElement.querySelector('input[name="' + input.name + '"]' + ':checked')
+                            if (elementChecked) {
+                                values[input.name] = elementChecked.value
+                            } else {
+                                values[input.name] = ''
+                            }
+                            break;
+                        default:
+                            values[input.name] = input.value
+                    }
                     return values
                 }, {})
 

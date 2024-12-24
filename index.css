@@ -113,6 +113,8 @@ html {
     margin-top: 36px;
 }
 
+
+
 #gender {
     display: flex;
     flex-direction: row;
@@ -127,6 +129,6 @@ html {
     font-size: 14px;
 }
 
-.gender--type p {
+.mg-left-6px {
     margin-left: 6px;
 }

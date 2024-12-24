@@ -76,7 +76,7 @@ function Validator(options) {
                                 break;
                             case 'checkbox':
                                 if(!input.matches(':checked')) {
-                                    values[input.name] = ''
+                                    values[input.name] = '' 
                                     return values;
                                 }
                                 
