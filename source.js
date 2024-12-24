@@ -6,28 +6,48 @@ function Validator(obj) {
     //  Các rule liên quan đến một input sẽ nằm trong mảng là value của một key là id của thẻ input cần kiểm tra
     var inputRules = {}
 
-    // Xóa bỏ class Invalid ở thẻ cha của inputElement
-    function removeInvalid(inputElement) {
-        var parentElement = inputElement.parentElement
-        parentElement.querySelector('.form-message').innerText = ''
-        parentElement.classList.remove('invalid')
+    // Hàm lấy ra thẻ cha của inputElement khớp với selector được truyền vào
+    function getParentElement(inputElement, selector) {
+        while (inputElement.parentElement) {
+            if (inputElement.parentElement.matches(selector)) {
+                return inputElement.parentElement
+            }
+            inputElement = inputElement.parentElement
+        }
     }
 
-    // Hàm thực hiện validate trường dữ liệu inputElement có thể tồn tại nhiều rule trên một inputElement
+    // Xóa bỏ class Invalid ở thẻ cha của inputElement
+    function removeInvalid(inputElement) {
+        var parentElement = getParentElement(inputElement, '.form-group')
+        parentElement.querySelector('.form-message').innerText = ''
+        parentElement.classList.remove('invalid')    
+    }
+
+    // Hàm thực hiện validate trường dữ liệu inputElement (có thể tồn tại nhiều rule trên một inputElement)
     function validate(inputElement, rule) {       
         var rules = inputRules[rule.selector]
         var errorMessage = ''
         for(var i = 0; i < rules.length; ++i) {
-            errorMessage = rules[i](inputElement.value)
+           switch(inputElement.type) {
+                case 'radio':
+                    
+                    break;
+                case 'checkbox':
+                    errorMessage = rules[i](formElement.querySelector(rule.selector + ':checked'))
+                    break;
+                default:
+                    errorMessage = rules[i](inputElement.value)
+           }
             if (errorMessage) break;
-        }
+        } 
 
         if (errorMessage) {
-            var errorElement = inputElement.parentElement.querySelector('.form-message')
+            var errorElement = getParentElement(inputElement, '.form-group').querySelector('.form-message')    
+            console.log(errorElement)
             if (errorElement) {
                 errorElement.innerText = errorMessage
-                inputElement.parentElement.classList.add('invalid')
-            }
+                getParentElement(inputElement, '.form-group').classList.add('invalid')
+            } 
         } 
         else {
             removeInvalid(inputElement)
@@ -46,13 +66,15 @@ function Validator(obj) {
             // Duyệt lại từng rule kiểm tra trường nào còn thiếu
             let isValidate = true
             obj.rules.forEach((rule) => {
-                var inputElement = formElement.querySelector(rule.selector)
-                if (inputElement) {
-                    isValidate = validate(inputElement, rule)
-                    if (!isValidate) {
-                        isValidate = false
+                var inputElements = formElement.querySelectorAll(rule.selector)
+                Array.from(inputElements).forEach((inputElement) => {
+                    if (inputElement) {
+                        isValidate = validate(inputElement, rule)
+                        if (!isValidate) {
+                            isValidate = false
+                        }
                     }
-                }
+                })
             })
 
             if (isValidate) {
@@ -70,30 +92,30 @@ function Validator(obj) {
 
         // Duyệt qua từng rule trong obj.rules và thực hiện validate
         obj.rules.forEach((rule) => {
-            var inputElement = formElement.querySelector(rule.selector)
-            if (inputElement) {
+            var inputElements = formElement.querySelectorAll(rule.selector)
 
-                // Lưu lại các rule cho mỗi input 
-                if(Array.isArray(inputRules[rule.selector])) {
-                    inputRules[rule.selector].push(rule.test)
-                } else {
-                    inputRules[rule.selector] = [rule.test]
-                }
-
-                console.log(inputRules)
+            Array.from(inputElements).forEach((inputElement) => {
+                if (inputElement) {
+                    // Lưu lại các rule cho mỗi input 
+                    if(Array.isArray(inputRules[rule.selector])) {
+                        inputRules[rule.selector].push(rule.test)
+                    } else {
+                        inputRules[rule.selector] = [rule.test]
+                    }
+        
+                     // Xử lý trường hợp blur ra khỏi input
+                    inputElement.onblur = () => {
+                        validate(inputElement, rule)
+                    }
     
-                 // Xư lý trường hợp blur ra khỏi input
-                inputElement.onblur = () => {
-                    validate(inputElement, rule)
+                    // Xư lý mỗi khi ngươi dùng nhập input
+                    inputElement.oninput = () => {
+                        removeInvalid(inputElement)
+                    }
+                } else {
+                    console.error(`không tìm thấy selector ${rule.selector}`)
                 }
-
-                // Xư lý mỗi khi ngươi dùng nhập input
-                inputElement.oninput = () => {
-                    removeInvalid(inputElement)
-                }
-            } else {
-                console.error(`không tìm thấy selector ${rule.selector}`)
-            }
+            })
         });
     } else {
         console.error(`${obj.form} không tồn tại`)

@@ -34,17 +34,42 @@
     
           <div class="form-group">
             <label for="password_confirmation" class="form-label">Nhập lại mật khẩu</label>
-            <input type="password" id="password_confirmation" name="password_confirmation"
-              placeholder="Nhập lại mật khẩu" class="form-control">
+            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Nhập lại mật khẩu" class="form-control">
             <span class="form-message"></span>
-          </div>       
-    
+          </div>  
+          
+          <div class="form-group">
+            <label for="password_confirmation" class="form-label">Chọn giới tính của bạn</label>
+            <div id="gender">
+               <div class="gender--type">
+                <input type="radio" name="gender" class="form-control"> 
+                <p>Nam</p>
+              </div>
+               <div class="gender--type">
+                <input type="radio" name="gender" value="Female" class="form-control">
+                <p>Nữ</p>
+              </div>
+              <div class="gender--type">
+                <input type="radio" name="gender" value="Other" class="form-control"> 
+                <p>Khác</p>
+              </div>
+            </div>
+            <span class="form-message"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="password_confirmation" class="form-label">Nhập lại mật khẩu</label>
+            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Nhập lại mật khẩu" class="form-control">
+            <span class="form-message"></span>
+          </div>  
+          
+          
           <button class="form-submit">Đăng ký</button>
         </form>
     </div>
-    <script src="./source.js"></script>
-    <!-- <script src="./index.js"></script> -->
 
+    <!-- <script src="./index.js"></script> -->
+    <script src="./source.js"></script>
     <script>
       Validator({
         form: '#form-1',
@@ -54,15 +79,40 @@
           Validator.isRequired('#fullname'),
           Validator.isRequired('#email', 'Vui lòng nhập email'),
           Validator.isEmail('#email'),
-          Validator.minLengthPassword('#password', 4),
+          Validator.isRequired('#password', 'Vui lòng nhập mật khẩu'),
+          Validator.minLengthPassword('#password', 1),
+          Validator.isRequired('#password_confirmation', 'Vui lòng nhập lại mật khẩu'),
           Validator.isPasswordConfirmed('#password_confirmation', () => {
             return document.querySelector('#password').value
           }),
+          Validator.isRequired('input[name="gender"]')
         ],
         onSubmit: function(data) {
           console.log(data)
         }
       })
+
+      // Validator({
+      //   form: '#form-1',
+      //   formGroupSelector: '.form-group',
+      //   errorSelector: '.form-message',
+      //   rules: [
+      //   Validator.isRequired('#fullname'),
+      //     Validator.isRequired('#email', 'Vui lòng nhập email'),
+      //     Validator.isEmail('#email'),
+      //     Validator.isRequired('#password', 'Vui lòng nhập mật khẩu'),
+      //     Validator.minLength('#password', 4),
+      //     Validator.isRequired('#password_confirmation', 'Vui lòng nhập lại mật khẩu'),
+      //     Validator.isConfirmed('#password_confirmation', () => {
+      //       return document.querySelector('#password').value
+      //     }),
+      //     Validator.isRequired('input[name="gender"]')
+      //   ],
+      //   onSubmit: function(data) {
+      //     console.log(data)
+      //   }
+      // })
+
     </script>
 </body>
 </html>	

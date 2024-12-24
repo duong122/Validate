@@ -113,3 +113,20 @@ html {
     margin-top: 36px;
 }
 
+#gender {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 14px;
+}
+
+.gender--type {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 14px;
+}
+
+.gender--type p {
+    margin-left: 6px;
+}

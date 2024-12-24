@@ -52,7 +52,7 @@ function Validator(options) {
     if (formElement) {
         // Khi submit
         formElement.onsubmit = (e) => {
-            e.preventDefault()
+           e.preventDefault()
 
             var isFormValid = true;
 
